@@ -1,0 +1,51 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerController : MonoBehaviour
+{
+   [SerializeField] float movementSpeed = 5f;//velocidad pj
+   float currentSpeed;//variable seguimiento pj
+   Rigidbody rb;//huesos de mi pj
+   Vector3 direction;//hacia donde se mueve mi pj
+
+   [SerializeField]float shiftSpeed=10f; //altura del salto
+   [SerializeField]float jumpForce=7f; //fuerza de salto
+   bool isGrounded= true; //si estamos tocando el suelo o no
+
+
+   void Start()
+    {
+        rb=GetComponent<Rigidbody>();
+        currentSpeed=movementSpeed;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        float moveHorizontal = Input.GetAxis("Horizontal");
+        float moveVertical = Input.GetAxis("Vertical");
+
+        direction = new Vector3(moveHorizontal, 0.0f, moveVertical);
+        direction = transform.TransformDirection(direction);//conversion
+
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
+            isGrounded = false;
+           
+        }
+    }
+
+    void FixedUpdate()
+    {
+        rb.MovePosition(transform.position + direction * currentSpeed * Time.deltaTime);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        isGrounded = true;
+        
+    }
+
+}
